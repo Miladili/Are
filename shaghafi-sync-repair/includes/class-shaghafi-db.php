@@ -71,9 +71,16 @@ class Shaghafi_DB {
 
         // v3.0.0 schema migration: add live_price_exact flag to installs created by older versions.
         // 1 = live_price comes from an exact per-variant SKU match, 0 = generic/fallback product price.
-        $col_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM `' . $table . '` LIKE %s', 'live_price_exact' ) );
-        if ( empty( $col_exists ) ) {
-            $wpdb->query( "ALTER TABLE {$table} ADD COLUMN live_price_exact tinyint(1) NOT NULL DEFAULT 0 AFTER live_price" );
+        // Wrapped defensively so a schema/permission issue can never white-screen the whole site.
+        try {
+            $col_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM `' . $table . '` LIKE %s', 'live_price_exact' ) );
+            if ( empty( $col_exists ) ) {
+                $wpdb->query( "ALTER TABLE {$table} ADD COLUMN live_price_exact tinyint(1) NOT NULL DEFAULT 0 AFTER live_price" );
+            }
+        } catch ( Throwable $e ) {
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi DB migration] ' . $e->getMessage() );
+            }
         }
 
         // One-time migration in v2.3.0: wipe any legacy wholesale B2B prices scraped from shaghafi.de

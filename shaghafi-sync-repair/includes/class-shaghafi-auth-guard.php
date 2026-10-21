@@ -54,44 +54,54 @@ class Shaghafi_Auth_Guard {
     }
 
     /**
-     * Main gate logic.
+     * Main gate logic. Fully fail-safe: any unexpected error is logged and the request is allowed
+     * to continue (WordPress's own capability checks still protect the admin) so the gate can
+     * never produce a site-wide critical/white-screen error.
      */
     public static function guard() {
-        if ( ! self::is_plugin_request() ) {
-            return;
-        }
-
-        // Logout request.
-        if ( ! empty( $_GET['shaghafi_logout'] ) ) {
-            if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'shaghafi_panel_logout' ) ) {
-                wp_die( 'درخواست نامعتبر است.', 'خطای دسترسی', array( 'response' => 403 ) );
+        try {
+            if ( ! self::is_plugin_request() ) {
+                return;
             }
-            self::destroy_current_session();
-            wp_safe_redirect( add_query_arg( 'page', 'shaghafi-sync-repair', admin_url( 'admin.php' ) ) );
-            exit;
-        }
 
-        if ( self::is_authenticated() ) {
+            // Logout request.
+            if ( ! empty( $_GET['shaghafi_logout'] ) ) {
+                if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'shaghafi_panel_logout' ) ) {
+                    wp_die( 'درخواست نامعتبر است.', 'خطای دسترسی', array( 'response' => 403 ) );
+                }
+                self::destroy_current_session();
+                wp_safe_redirect( add_query_arg( 'page', 'shaghafi-sync-repair', admin_url( 'admin.php' ) ) );
+                exit;
+            }
+
+            if ( self::is_authenticated() ) {
+                return;
+            }
+
+            // Login form submission.
+            if ( isset( $_POST['shaghafi_login_username'] ) || isset( $_POST['shaghafi_login_password'] ) ) {
+                self::handle_login_post();
+            }
+
+            if ( wp_doing_ajax() ) {
+                wp_send_json_error(
+                    array(
+                        'message' => 'نشست ورود به پنل شقفی منقضی شده است. صفحه را مجدداً بارگذاری و وارد شوید.',
+                        'relogin' => true,
+                    ),
+                    403
+                );
+            }
+
+            self::render_login_screen();
+            exit;
+        } catch ( \Throwable $e ) {
+            // Never let the access gate take the whole admin/site down.
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi Auth Guard] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+            }
             return;
         }
-
-        // Login form submission.
-        if ( isset( $_POST['shaghafi_login_username'] ) || isset( $_POST['shaghafi_login_password'] ) ) {
-            self::handle_login_post();
-        }
-
-        if ( wp_doing_ajax() ) {
-            wp_send_json_error(
-                array(
-                    'message' => 'نشست ورود به پنل شقفی منقضی شده است. صفحه را مجدداً بارگذاری و وارد شوید.',
-                    'relogin' => true,
-                ),
-                403
-            );
-        }
-
-        self::render_login_screen();
-        exit;
     }
 
     /**
@@ -235,15 +245,30 @@ class Shaghafi_Auth_Guard {
     }
 
     /**
-     * Render the dedicated RTL login screen.
+     * Render the dedicated RTL login screen as a fully standalone HTML document.
+     * It intentionally does NOT include wp-admin/admin-header.php so it cannot be affected
+     * by other admin plugins or screen-setup differences (and can never fatal on them).
      */
     private static function render_login_screen( $error = '' ) {
-        global $title;
-        $title = 'ورود به پنل شقفی | Shaghafi Sync &amp; Repair';
-
-        require_once ABSPATH . 'wp-admin/admin-header.php';
+        if ( function_exists( 'nocache_headers' ) ) {
+            nocache_headers();
+        }
+        if ( ! headers_sent() ) {
+            header( 'Content-Type: text/html; charset=' . get_bloginfo( 'charset' ) );
+            header( 'X-Robots-Tag: noindex, nofollow' );
+        }
+        $site_name = function_exists( 'get_bloginfo' ) ? get_bloginfo( 'name' ) : 'WordPress';
         ?>
-        <div class="wrap" dir="rtl" style="margin:0;">
+        <!DOCTYPE html>
+        <html dir="rtl" lang="fa">
+        <head>
+            <meta charset="<?php echo esc_attr( function_exists( 'get_bloginfo' ) ? get_bloginfo( 'charset' ) : 'UTF-8' ); ?>" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <meta name="robots" content="noindex,nofollow" />
+            <title><?php echo esc_html( 'ورود به پنل شقفی | ' . $site_name ); ?></title>
+        </head>
+        <body style="background:#0f172a;margin:0;padding:20px;font-family:Tahoma,Segoe UI,sans-serif;">
+        <div class="wrap" dir="rtl" style="margin:0;min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;">
             <style>
                 .shaghafi-login-wrap{max-width:430px;margin:60px auto;background:#fff;border:1px solid #cbd5e1;border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.10);padding:34px 30px;}
                 .shaghafi-login-wrap h1{font-size:20px;margin:0 0 6px;color:#0f172a;display:flex;align-items:center;gap:8px;}
@@ -279,7 +304,8 @@ class Shaghafi_Auth_Guard {
                 <div class="shaghafi-login-foot">دسترسی فقط برای مدیر مجاز فروشگاه — تمامی درخواست‌های AJAX پنل نیز قفل هستند.</div>
             </div>
         </div>
+        </body>
+        </html>
         <?php
-        require_once ABSPATH . 'wp-admin/admin-footer.php';
     }
 }

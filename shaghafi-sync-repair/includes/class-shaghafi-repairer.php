@@ -3808,26 +3808,33 @@ class Shaghafi_Repairer {
         if ( ! class_exists( 'Shaghafi_Category_Matcher' ) ) {
             return array();
         }
-        $options = array();
-        foreach ( $variants as $fv ) {
-            if ( ! empty( $fv['variantenauspraegung'] ) ) {
-                $options[] = $fv['variantenauspraegung'];
+        try {
+            $options = array();
+            foreach ( $variants as $fv ) {
+                if ( ! empty( $fv['variantenauspraegung'] ) ) {
+                    $options[] = $fv['variantenauspraegung'];
+                }
             }
+            $res = Shaghafi_Category_Matcher::assign_for_product(
+                (int) $parent_id,
+                array(
+                    'title'      => $title,
+                    'brand'      => $brand,
+                    'properties' => $props,
+                    'options'    => $options,
+                    'sku'        => ! empty( $variants[0]['base_sku'] ) ? $variants[0]['base_sku'] : '',
+                )
+            );
+            if ( is_wp_error( $res ) ) {
+                return array( 'note' => $res->get_error_message() );
+            }
+            return $res;
+        } catch ( Throwable $e ) {
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi category] ' . $e->getMessage() );
+            }
+            return array( 'note' => 'تشخیص خودکار دسته با خطا مواجه شد؛ دسته دستی حفظ شد.' );
         }
-        $res = Shaghafi_Category_Matcher::assign_for_product(
-            (int) $parent_id,
-            array(
-                'title'      => $title,
-                'brand'      => $brand,
-                'properties' => $props,
-                'options'    => $options,
-                'sku'        => ! empty( $variants[0]['base_sku'] ) ? $variants[0]['base_sku'] : '',
-            )
-        );
-        if ( is_wp_error( $res ) ) {
-            return array( 'note' => $res->get_error_message() );
-        }
-        return $res;
     }
 
     /**
@@ -3835,6 +3842,7 @@ class Shaghafi_Repairer {
      * first gallery image → first variation image.
      */
     private static function ensure_featured_image_fallback( $parent_id, $live, $base_sku, $title, array $variants ) {
+        try {
         if ( (int) get_post_thumbnail_id( $parent_id ) > 0 ) {
             return;
         }
@@ -3874,12 +3882,18 @@ class Shaghafi_Repairer {
                 }
             }
         }
+        } catch ( Throwable $e ) {
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi featured image] ' . $e->getMessage() );
+            }
+        }
     }
 
     /**
      * Merge per-variant Shaghafi galleries into the parent product gallery (deduped, no featured duplicate).
      */
     private static function enrich_gallery_from_variant_images( $parent_id, $live, $base_sku, $title, array $variants ) {
+        try {
         $extra_urls = array();
         foreach ( $variants as $fv ) {
             // Size-only variations share the parent images; their galleries add nothing new.
@@ -3902,12 +3916,18 @@ class Shaghafi_Repairer {
             return;
         }
         self::sideload_product_gallery_images( $parent_id, $live, $base_sku, $title, array_keys( $extra_urls ) );
+        } catch ( Throwable $e ) {
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi gallery enrich] ' . $e->getMessage() );
+            }
+        }
     }
 
     /**
      * Verify every non-size variation has a thumbnail; download its Shaghafi image if it is still missing.
      */
     private static function verify_variation_images( $parent_id, array $variants ) {
+        try {
         $children = array();
         foreach ( get_posts(
             array(
@@ -3936,6 +3956,11 @@ class Shaghafi_Repairer {
                 continue;
             }
             self::assign_smart_variation_image( $parent_id, $variation_id, $fv, true );
+        }
+        } catch ( Throwable $e ) {
+            if ( function_exists( 'error_log' ) ) {
+                error_log( '[Shaghafi variation images] ' . $e->getMessage() );
+            }
         }
     }
 

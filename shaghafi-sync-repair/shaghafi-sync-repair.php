@@ -3,7 +3,7 @@
  * Plugin Name: Shaghafi Sync & Repair Pro (پلاگین هوشمند سینک، بررسی زنده و تعمیر شقفی)
  * Plugin URI: https://shaghafi.de/
  * Description: مقایسه هوشمند محصولات و وریشن‌های ووکامرس با فایل مرجع likadeo.csv و بررسی زنده از سایت shaghafi.de (صفحه‌بندی کامل، تشخیص و بازیابی خودکار عکس‌های وریشن و تصویر شاخص حذف‌شده/خراب‌شده از گالری محصول پس از ریستور بکاپ، اصلاح قطعی ویژگی وریشن‌های دارای نام/کلید ناهماهنگ مانند Variante:، رفع نمایش مضاعف/شکسته سواچ‌های WoodMart، تبدیل بدون برش عکس وریشن‌ها به فرمت .webp با کیفیت ۹۴٪ و ابعاد 700×800، ثبت نام محصول به عنوان نام و Alt عکس بدون نام شقفی، تشخیص محصولات سایزی بدون عکس، حذف کامل وریشن‌های غیرفعال و حذف‌شده از شقفی، پنل تعمیر یک‌کلیکی با انتخاب تیک‌ها و زمان‌بندی خودکار).
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Shaghafi WooCommerce Integration
  * Text Domain: shaghafi-sync-repair
  * Requires at least: 5.8
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SHAGHAFI_SYNC_VERSION', '3.0.0' );
+define( 'SHAGHAFI_SYNC_VERSION', '3.0.1' );
 define( 'SHAGHAFI_SYNC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SHAGHAFI_SYNC_URL', plugin_dir_url( __FILE__ ) );
 
@@ -87,18 +87,27 @@ class Shaghafi_Sync_Repair_Plugin {
         $stored_version = get_option( 'shaghafi_plugin_version', '' );
 
         if ( SHAGHAFI_SYNC_VERSION !== $stored_version ) {
-            global $wpdb;
+            try {
+                global $wpdb;
 
-            // Drop all cached remote lookups so new parsing/pricing logic takes effect immediately.
-            $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_shaghafi_%' OR option_name LIKE '_transient_timeout_shaghafi_%'" );
-            wp_cache_flush();
+                // Drop all cached remote lookups so new parsing/pricing logic takes effect immediately.
+                $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_shaghafi_%' OR option_name LIKE '_transient_timeout_shaghafi_%'" );
+                if ( function_exists( 'wp_cache_flush' ) ) {
+                    wp_cache_flush();
+                }
 
-            // Some hosts keep stale bytecode after a manual FTP/cPanel file replacement; reset it when allowed.
-            if ( function_exists( 'opcache_reset' ) && @opcache_get_status() ) {
-                @opcache_reset();
+                // Some hosts keep stale bytecode after a manual FTP/cPanel file replacement; reset it when allowed.
+                if ( function_exists( 'opcache_reset' ) && @opcache_get_status() ) {
+                    @opcache_reset();
+                }
+
+                Shaghafi_DB::ensure_initialized();
+            } catch ( Throwable $e ) {
+                // An upgrade routine must never take the whole site down.
+                if ( function_exists( 'error_log' ) ) {
+                    error_log( '[Shaghafi upgrade] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+                }
             }
-
-            Shaghafi_DB::ensure_initialized();
             update_option( 'shaghafi_plugin_version', SHAGHAFI_SYNC_VERSION, false );
             return;
         }
