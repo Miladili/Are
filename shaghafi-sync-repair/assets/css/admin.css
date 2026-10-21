@@ -1,0 +1,400 @@
+/* Shaghafi Sync & Repair Pro v2.1 - RTL Admin Styles */
+.shaghafi-wrap {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Roboto, sans-serif;
+    direction: rtl;
+    text-align: right;
+    color: #1e293b;
+    max-width: 100%;
+    margin-top: 15px;
+}
+
+.shaghafi-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+    color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.shaghafi-header h1 {
+    color: #ffffff !important;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    padding: 0;
+}
+
+.shaghafi-subtitle {
+    color: #cbd5e1;
+    margin: 0;
+    font-size: 13px;
+}
+
+.shaghafi-subtitle code {
+    background: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.shaghafi-header-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.shaghafi-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #f1f5f9;
+}
+
+.shaghafi-tabs-nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.shaghafi-tab-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.shaghafi-tab-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.shaghafi-tab-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.shaghafi-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.shaghafi-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-right: 4px solid #64748b;
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.shaghafi-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.shaghafi-kpi-card .kpi-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.shaghafi-kpi-card .kpi-num {
+    display: block;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 6px 0 4px;
+    color: #0f172a;
+}
+
+.shaghafi-kpi-card small {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.kpi-repair { border-right-color: #ef4444; }
+.kpi-repair .kpi-num { color: #dc2626; }
+.kpi-sync { border-right-color: #f59e0b; }
+.kpi-sync .kpi-num { color: #d97706; }
+.kpi-create { border-right-color: #3b82f6; }
+.kpi-create .kpi-num { color: #2563eb; }
+.kpi-disable { border-right-color: #6b7280; }
+.kpi-disable .kpi-num { color: #4b5563; }
+.kpi-manual { border-right-color: #8b5cf6; }
+.kpi-manual .kpi-num { color: #7c3aed; }
+.kpi-healthy { border-right-color: #10b981; }
+.kpi-healthy .kpi-num { color: #059669; }
+
+.shaghafi-toolbar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.shaghafi-toolbar-right,
+.shaghafi-toolbar-left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Pagination Bar */
+.shaghafi-pagination-bar {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.shaghafi-page-info {
+    font-size: 13px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.shaghafi-page-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.shaghafi-page-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.shaghafi-page-btn:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+}
+
+.shaghafi-page-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+.shaghafi-page-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.shaghafi-progress-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.shaghafi-progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #1e40af;
+}
+
+.shaghafi-progress-track {
+    height: 10px;
+    background: #dbeafe;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.shaghafi-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #10b981);
+    transition: width 0.25s ease;
+}
+
+.shaghafi-table-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.shaghafi-table th {
+    font-weight: 700 !important;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.shaghafi-table td {
+    vertical-align: middle !important;
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+}
+
+.shaghafi-img-preview-box {
+    width: 49px;
+    height: 56px;
+    object-fit: contain !important;
+    background: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #cbd5e1;
+    display: block;
+}
+
+.shaghafi-dims-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: 700;
+    direction: ltr;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-top: 2px;
+}
+
+.shaghafi-dims-ok {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.shaghafi-dims-bad {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.shaghafi-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 0.3px;
+}
+
+.shaghafi-badge-repair_and_link,
+.shaghafi-badge-removed_from_feed {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.shaghafi-badge-keep_and_sync,
+.shaghafi-badge-all_zero_stock_in_feed {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.shaghafi-badge-create_new_variation {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+
+.shaghafi-badge-disable_missing,
+.shaghafi-badge-orphan_variation {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.shaghafi-badge-manual_review {
+    background: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #c4b5fd;
+}
+
+.shaghafi-badge-healthy {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.shaghafi-diff-bad {
+    color: #dc2626;
+    font-weight: 700;
+    background: #fef2f2;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.shaghafi-diff-good {
+    color: #0284c7;
+    font-weight: 700;
+    background: #f0f9ff;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.shaghafi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.shaghafi-action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.shaghafi-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    background: #0f172a;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999999;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
